@@ -1,7 +1,10 @@
 import express from 'express';
+import entryRoutes from './controllers/EntryController';
 
-const app = express();
+const router = express();
 
-app.get('/', (req, res) => res.json({ message: 'Teste, World!' }));
+router.get('/', (request, response) => response.json({ message: 'teste' }));
 
-app.listen(3333);
+router.use('/entry', entryRoutes);
+
+router.listen(3333);
