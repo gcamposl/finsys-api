@@ -1,14 +1,1 @@
-[
-  {
-    "description": "salary",
-    "type": "INCOME",
-    "value": 1000,
-    "comment": "dia do pagode"
-  }, 
-  {
-    "description": "its friday day",
-    "type": "COST",
-    "value": 1000,
-    "comment": "bye"
-  }
-]
+[{"description":"xxxx;","type":"INCOME","value":2000,"comment":"abc"},{"description":"yyyy","type":"COST","value":300,"comment":"bcd"}]

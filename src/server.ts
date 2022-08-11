@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import { v4 as uuid } from 'uuid';
+import fakeDb from './data.json';
 import fs from 'fs';
 
 enum Type {
@@ -24,19 +24,30 @@ router.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });
 
-// consume datas
+// consuming json file with fake db
 let data = fs.readFileSync(path.join(__dirname, 'data.json'));
 let dbData = JSON.parse(data.toString());
 console.log(dbData);
 
-// CRUD routes
+// CRUD routes for entry
 router.post('/', (req: Request, res: Response) => {
   const data: IEntry = req.body;
+
   if (data && Object.keys(data).length === 0) {
     return res.status(404).json({ message: 'No content - [404]' });
   }
-  console.log(data);
-  dbData.push(data);
+
+  fakeDb.push(data);
+
+  //
+  // for (let i in fakeDb) {
+  //   fakeDb[i].type == '';
+  // }
+
+  fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
+    console.log(err);
+  });
+
   return res.json({ mes: data });
 });
 
