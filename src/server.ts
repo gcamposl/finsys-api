@@ -39,11 +39,6 @@ router.post('/', (req: Request, res: Response) => {
 
   fakeDb.push(data);
 
-  //
-  // for (let i in fakeDb) {
-  //   fakeDb[i].type == '';
-  // }
-
   fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
     console.log(err);
   });
@@ -52,7 +47,18 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 router.get('/', (req, res) => {
-  return res.json({ message: 'get' });
+  if (!fakeDb) return res.status(404).json({ message: 'No content - [404]' });
+  return res.json({ message: fakeDb });
+});
+
+router.get('/:description', (req, res) => {
+  const { description } = req.params;
+  // ver params e query params
+  console.log(description);
+  for (let fdb of fakeDb) {
+    if (fdb.description === description) return fdb;
+  }
+  return res.status(404).json({ message: 'No content - [404]' });
 });
 
 router.put('/', (req, res) => {
