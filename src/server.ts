@@ -9,12 +9,12 @@ enum Type {
   COST = 'COST',
 }
 
-interface IEntry {
+type Entry = {
   description: string;
   type: Type;
   value: number;
   comment: string;
-}
+};
 
 dotenv.config();
 // init and run server
@@ -30,7 +30,7 @@ let dbData = JSON.parse(data.toString());
 
 // CRUD routes for entry
 router.post('/', (req: Request, res: Response) => {
-  const data: IEntry = req.body;
+  const data: Entry = req.body;
 
   if (data && Object.keys(data).length === 0) {
     return res.status(404).json({ message: 'No content - [404]' });
@@ -72,4 +72,16 @@ router.get('/:description', (req, res) => {
 
 router.put('/', (req, res) => {
   return res.json({ message: 'put' });
+});
+
+router.delete('/:description', (req, res) => {
+  const description = req.params.description;
+  if (description) {
+    const newDb = fakeDb.filter((db) => db.description !== description);
+    fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(newDb), (err) => {
+      console.log(err);
+    });
+    return res.status(200).json({ message: 'Deleted - [200]', newDb });
+  }
+  return res.status(404).json({ message: 'No content - [404]' });
 });
