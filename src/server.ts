@@ -70,8 +70,13 @@ router.get('/:description', (req, res) => {
   return res.status(404).json({ message: 'No content - [404]' });
 });
 
-router.put('/', (req, res) => {
-  return res.json({ message: 'put' });
+router.put('/:description', (req, res) => {
+  const desc = req.params.description;
+  const { description, type, value, comment } = req.body;
+  console.log(description, type, value, comment);
+  let newDb = fakeDb.filter((db) => db.description === desc);
+  //...
+  return res.status(404).json({ message: 'No content - [404]' });
 });
 
 router.delete('/:description', (req, res) => {
