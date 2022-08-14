@@ -27,7 +27,6 @@ router.listen(process.env.PORT, () => {
 // consuming json file with fake db
 let data = fs.readFileSync(path.join(__dirname, 'data.json'));
 let dbData = JSON.parse(data.toString());
-console.log(dbData);
 
 // CRUD routes for entry
 router.post('/', (req: Request, res: Response) => {
@@ -52,11 +51,21 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:description', (req, res) => {
-  const { description } = req.params;
+  const description = req.params.description;
   // ver params e query params
   console.log(description);
-  for (let fdb of fakeDb) {
-    if (fdb.description === description) return fdb;
+  let i = 0;
+  // verbose method
+  // if (description)
+  //   for (let fdb of fakeDb) {
+  //     console.log(i++, ' -> ', fdb);
+  //     if (fdb.description === description) return res.json({ message: 'achou po!', obj: fdb });
+  //   }
+
+  // functional method
+  if (description) {
+    const account = fakeDb.filter((acc) => acc.description === description);
+    if (account) return res.json(account);
   }
   return res.status(404).json({ message: 'No content - [404]' });
 });
