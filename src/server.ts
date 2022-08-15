@@ -65,7 +65,7 @@ router.get('/:description', (req, res) => {
   // functional method
   if (description) {
     const account = fakeDb.filter((acc) => acc.description === description);
-    if (account) return res.json(account);
+    if (account && Object.keys(account).length > 0) return res.json(account);
   }
   return res.status(404).json({ message: 'No content - [404]' });
 });
@@ -90,3 +90,13 @@ router.delete('/:description', (req, res) => {
   }
   return res.status(404).json({ message: 'No content - [404]' });
 });
+
+// TODO:
+/*
+  - [X] POST
+  - [] PUT
+  - [X] GET
+  - [X] GET BY ID
+  - [X] DELETE
+
+*/
