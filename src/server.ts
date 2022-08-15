@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import fakeDb from './data.json';
-import fs from 'fs';
+import fs, { rmSync } from 'fs';
 
 enum Type {
   INCOME = 'INCOME',
@@ -72,10 +72,21 @@ router.get('/:description', (req, res) => {
 
 router.put('/:description', (req, res) => {
   const desc = req.params.description;
-  const { description, type, value, comment } = req.body;
-  console.log(description, type, value, comment);
-  let newDb = fakeDb.filter((db) => db.description === desc);
-  //...
+  const obj = req.body;
+  console.log(obj);
+
+  let newDb = fakeDb.map((entry) => {
+    if (entry.description === desc) entry = obj;
+    return entry;
+  });
+
+  if (newDb && Object.keys(newDb).length > 0) {
+    fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(newDb), (err) => {
+      console.log(err);
+    });
+    console.log(newDb);
+    return res.status(201).json({ message: 'Updated', newDb });
+  }
   return res.status(404).json({ message: 'No content - [404]' });
 });
 
@@ -99,4 +110,9 @@ router.delete('/:description', (req, res) => {
   - [X] GET BY ID
   - [X] DELETE
 
+  proximos passos...
+  inserir mongodb
+  inserir typeorm
+  inserir swagger
+  inserir uma arquitetura
 */
