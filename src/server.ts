@@ -75,18 +75,14 @@ router.put('/:description', (req, res) => {
   const obj = req.body;
   console.log(obj);
 
-  let newDb = fakeDb.map((entry) => {
-    if (entry.description === desc) entry = obj;
-    return entry;
-  });
+  const index = fakeDb.findIndex((item) => item.description === desc);
 
-  if (newDb && Object.keys(newDb).length > 0) {
-    fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(newDb), (err) => {
-      console.log(err);
-    });
-    console.log(newDb);
-    return res.status(201).json({ message: 'Updated', newDb });
-  }
+  fakeDb[index] = obj;
+  fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
+    console.log(err);
+  });
+  return res.status(201).json({ message: 'Updated', fakeDb });
+
   return res.status(404).json({ message: 'No content - [404]' });
 });
 
