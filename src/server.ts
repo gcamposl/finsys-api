@@ -79,10 +79,11 @@ router.put('/:id', (req, res) => {
   return res.status(404).json({ message: 'Not Found - [404]' });
 });
 
-router.delete('/:description', (req, res) => {
-  const description = req.params.description;
-  if (description) {
-    const newDb = fakeDb.filter((db) => db.description !== description);
+router.delete('/:id', (req, res) => {
+  const id = req.params.id;
+  if (id) {
+    // refazer com pop
+    const newDb = fakeDb.filter((db) => db.id !== id);
     fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(newDb), (err) => {
       console.log(err);
     });
