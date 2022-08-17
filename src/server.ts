@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fakeDb from './data.json';
 import fs, { rmSync } from 'fs';
+import { v4 as uuid } from 'uuid';
+import { RandomUUIDOptions } from 'crypto';
 
 enum Type {
   INCOME = 'INCOME',
@@ -10,6 +12,7 @@ enum Type {
 }
 
 type Entry = {
+  id: string;
   description: string;
   type: Type;
   value: number;
@@ -31,6 +34,7 @@ let dbData = JSON.parse(data.toString());
 // CRUD routes for entry
 router.post('/', (req: Request, res: Response) => {
   const data: Entry = req.body;
+  data.id = uuid();
 
   if (data && Object.keys(data).length === 0) {
     return res.status(404).json({ message: 'No content - [404]' });
@@ -42,7 +46,7 @@ router.post('/', (req: Request, res: Response) => {
     console.log(err);
   });
 
-  return res.json({ mes: data });
+  return res.json(data);
 });
 
 router.get('/', (req, res) => {
@@ -50,32 +54,20 @@ router.get('/', (req, res) => {
   return res.json({ message: fakeDb });
 });
 
-router.get('/:description', (req, res) => {
-  const description = req.params.description;
-  // ver params e query params
-  console.log(description);
-  let i = 0;
-  // verbose method
-  // if (description)
-  //   for (let fdb of fakeDb) {
-  //     console.log(i++, ' -> ', fdb);
-  //     if (fdb.description === description) return res.json({ message: 'achou po!', obj: fdb });
-  //   }
-
-  // functional method
-  if (description) {
-    const account = fakeDb.filter((acc) => acc.description === description);
+router.get('/:id', (req, res) => {
+  const id = req.params.id;
+  if (id) {
+    const account = fakeDb.filter((acc) => acc.id === id);
     if (account && Object.keys(account).length > 0) return res.json(account);
   }
   return res.status(404).json({ message: 'No content - [404]' });
 });
 
-router.put('/:description', (req, res) => {
-  const desc = req.params.description;
+router.put('/:id', (req, res) => {
+  const desc = req.params.id;
   const obj = req.body;
-  console.log(obj);
-
-  const index = fakeDb.findIndex((item) => item.description === desc);
+  // esta perdendo id (sei como resolver)
+  const index = fakeDb.findIndex((item) => item.id === desc);
 
   fakeDb[index] = obj;
   fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
@@ -97,18 +89,3 @@ router.delete('/:description', (req, res) => {
   }
   return res.status(404).json({ message: 'No content - [404]' });
 });
-
-// TODO:
-/*
-  - [X] POST
-  - [] PUT
-  - [X] GET
-  - [X] GET BY ID
-  - [X] DELETE
-
-  proximos passos...
-  inserir mongodb
-  inserir typeorm
-  inserir swagger
-  inserir uma arquitetura
-*/
