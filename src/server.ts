@@ -37,7 +37,7 @@ router.post('/', (req: Request, res: Response) => {
   data.id = uuid();
 
   if (data && Object.keys(data).length === 0) {
-    return res.status(404).json({ message: 'No content - [404]' });
+    return res.status(404).json({ message: 'Not Found - [404]' });
   }
 
   fakeDb.push(data);
@@ -50,7 +50,7 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 router.get('/', (req, res) => {
-  if (!fakeDb) return res.status(404).json({ message: 'No content - [404]' });
+  if (!fakeDb) return res.status(404).json({ message: 'Not Found - [404]' });
   return res.json({ message: fakeDb });
 });
 
@@ -60,22 +60,23 @@ router.get('/:id', (req, res) => {
     const account = fakeDb.filter((acc) => acc.id === id);
     if (account && Object.keys(account).length > 0) return res.json(account);
   }
-  return res.status(404).json({ message: 'No content - [404]' });
+  return res.status(404).json({ message: 'Not Found - [404]' });
 });
 
 router.put('/:id', (req, res) => {
-  const desc = req.params.id;
+  const id = req.params.id;
   const obj = req.body;
-  // esta perdendo id (sei como resolver)
-  const index = fakeDb.findIndex((item) => item.id === desc);
+  const index = fakeDb.findIndex((item) => item.id === id);
 
-  fakeDb[index] = obj;
-  fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
-    console.log(err);
-  });
-  return res.status(201).json({ message: 'Updated', fakeDb });
-
-  return res.status(404).json({ message: 'No content - [404]' });
+  if (index > 0) {
+    obj.id = id;
+    fakeDb[index] = obj;
+    fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
+      console.log(err);
+    });
+    return res.status(201).json({ message: 'Updated', fakeDb });
+  }
+  return res.status(404).json({ message: 'Not Found - [404]' });
 });
 
 router.delete('/:description', (req, res) => {
@@ -87,5 +88,5 @@ router.delete('/:description', (req, res) => {
     });
     return res.status(200).json({ message: 'Deleted - [200]', newDb });
   }
-  return res.status(404).json({ message: 'No content - [404]' });
+  return res.status(404).json({ message: 'Not Found - [404]' });
 });
