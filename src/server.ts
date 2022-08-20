@@ -2,9 +2,9 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import fakeDb from './data.json';
-import fs, { rmSync } from 'fs';
+import fs from 'fs';
 import { v4 as uuid } from 'uuid';
-import { RandomUUIDOptions } from 'crypto';
+import { MongoClient } from 'mongodb';
 
 enum Type {
   INCOME = 'INCOME',
@@ -20,6 +20,7 @@ type Entry = {
 };
 
 dotenv.config();
+
 // init and run server
 const router = express();
 router.use(express.json());
@@ -29,7 +30,19 @@ router.listen(process.env.PORT, () => {
 
 // consuming json file with fake db
 let data = fs.readFileSync(path.join(__dirname, 'data.json'));
-let dbData = JSON.parse(data.toString());
+
+// connect databsae
+const uri = process.env.DB_CONN_STRING;
+const client = new MongoClient(uri);
+
+async function run() {
+  try {
+    const database = client.db(process.env.DB_NAME);
+    const accounts = database.collection('accounts');
+  } finally {
+    await client.close();
+  }
+}
 
 // CRUD routes for entry
 router.post('/', (req: Request, res: Response) => {
