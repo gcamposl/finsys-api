@@ -39,10 +39,16 @@ async function run() {
   try {
     const database = client.db(process.env.DB_NAME);
     const accounts = database.collection('accounts');
+
+    const query = { description: 'xpto' };
+    const description = await accounts.findOne(query);
+    console.log(description);
   } finally {
     await client.close();
   }
 }
+
+run();
 
 // CRUD routes for entry
 router.post('/', (req: Request, res: Response) => {
