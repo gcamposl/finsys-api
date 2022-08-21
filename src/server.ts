@@ -32,38 +32,53 @@ router.listen(process.env.PORT, () => {
 let data = fs.readFileSync(path.join(__dirname, 'data.json'));
 
 // connect databsae
-const uri = process.env.DB_CONN_STRING;
-const client = new MongoClient(uri);
 
-async function run() {
-  try {
-    const database = client.db(process.env.DB_NAME);
-    const accounts = database.collection('accounts');
+const client = new MongoClient(process.env.DB_CONN_STRING);
 
-    const query = { description: 'xpto' };
-    const description = await accounts.findOne(query);
-    console.log(description);
-  } finally {
-    await client.close();
-  }
-}
+// async function run() {
+//   try {
+//     // const client = new MongoClient(process.env.DB_CONN_STRING);
+//     // const db = client.db(process.env.DB_NAME);
+//     const database = client.db(process.env.DB_NAME);
+//     const accounts = database.collection('accounts');
+//     const query = { description: 'xpto' };
+//     const description = await accounts.findOne(query);
+//     console.log(description);
+//   } finally {
+//     await client.close();
+//   }
+// }
 
-run();
+// run();
+
+const connectDB = () => {
+  const database = client.db(process.env.DB_NAME);
+  return database;
+};
 
 // CRUD routes for entry
-router.post('/', (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response) => {
   const data: Entry = req.body;
-  data.id = uuid();
 
   if (data && Object.keys(data).length === 0) {
     return res.status(404).json({ message: 'Not Found - [404]' });
   }
 
-  fakeDb.push(data);
+  // fakeDb.push(data);
 
-  fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
-    console.log(err);
-  });
+  const db = connectDB();
+  const accounts = db.collection('accounts');
+  accounts.insertOne(data);
+  client.close();
+
+  // fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
+  //   console.log(err);
+  // });
+  // const client = connectDB();
+  // try {
+  // } finally {
+  //   await client.close();
+  // }
 
   return res.json(data);
 });
@@ -76,8 +91,13 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const id = req.params.id;
   if (id) {
-    const account = fakeDb.filter((acc) => acc.id === id);
-    if (account && Object.keys(account).length > 0) return res.json(account);
+    // const account = fakeDb.filter((acc) => acc.id === id);
+    // if (account && Object.keys(account).length > 0) return res.json(account);
+    const db = connectDB();
+    const accounts = db.collection('accounts');
+    const data = accounts.findOne({ _id: id });
+    client.close();
+    return res.status(200).json(data);
   }
   return res.status(404).json({ message: 'Not Found - [404]' });
 });
