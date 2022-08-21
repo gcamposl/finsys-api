@@ -3,20 +3,20 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fakeDb from './data.json';
 import fs from 'fs';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 enum Type {
   INCOME = 'INCOME',
   COST = 'COST',
 }
 
-type Entry = {
+interface Entry {
   id: string;
   description: string;
   type: Type;
   value: number;
   comment: string;
-};
+}
 
 dotenv.config();
 
@@ -40,8 +40,7 @@ const connectDB = async () => {
 
 // CRUD routes for entry
 router.post('/', async (req: Request, res: Response) => {
-  const data: Entry = req.body;
-
+  const data = req.body;
   if (data && Object.keys(data).length === 0) return res.status(404).json({ message: 'Not Found - [404]' });
 
   try {
@@ -81,10 +80,9 @@ router.get('/:id', async (req, res) => {
   if (id) {
     try {
       const db = await connectDB();
-      const accounts = db.collection('accounts');
-      const data = await accounts.findOne({ _id: id });
+      const account = await db.collection('accounts').findOne({ _id: id });
 
-      return res.status(200).json(data);
+      return res.status(200).json(account);
     } catch (err) {
       console.log(err);
     } finally {
@@ -112,14 +110,19 @@ router.put('/:id', (req, res) => {
   return res.status(404).json({ message: 'Not Found - [404]' });
 });
 
-router.delete('/:id', (req, res) => {
-  const id = req.params.id;
-  if (id) {
-    const newDb = fakeDb.filter((db) => db.id !== id);
-    fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(newDb), (err) => {
-      console.log(err);
-    });
-    return res.status(200).json({ message: 'Deleted - [200]', newDb });
+router.delete('/:id', async (req, res) => {
+  const id = req?.params?.id;
+  if (!id) {
+    return res.status(404).json({ message: 'Bad Request - [400]' });
   }
-  return res.status(404).json({ message: 'Not Found - [404]' });
+
+  try {
+    const database = await connectDB();
+    const accounts = await database.collection('accounts').deleteOne({ _id: id });
+    return res.status(200).json({ accounts });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    await client.close();
+  }
 });
