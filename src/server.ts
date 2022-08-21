@@ -82,7 +82,7 @@ router.get('/:id', async (req, res) => {
     try {
       const db = await connectDB();
       const accounts = db.collection('accounts');
-      const data = accounts.findOne({ _id: id });
+      const data = await accounts.findOne({ _id: id });
 
       return res.status(200).json(data);
     } catch (err) {
