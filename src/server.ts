@@ -50,7 +50,7 @@ router.post('/', async (req: Request, res: Response) => {
 
     return res.status(201).json(data);
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   } finally {
     await client.close();
     console.log('Connection close.');
@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
 
     return res.status(200).json(accounts);
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   } finally {
     await client.close();
     console.log('Connection close.');
@@ -84,7 +84,7 @@ router.get('/:id', async (req, res) => {
 
       return res.status(200).json(account);
     } catch (err) {
-      console.log(err);
+      console.log(err.message);
     } finally {
       await client.close();
       console.log('Connection close.');
@@ -94,20 +94,23 @@ router.get('/:id', async (req, res) => {
   return res.status(404).json({ message: 'Not Found - [404]' });
 });
 
-router.put('/:id', (req, res) => {
-  const id = req.params.id;
-  const obj = req.body;
-  const index = fakeDb.findIndex((item) => item.id === id);
+router.put('/:id', async (req, res) => {
+  const id = req?.params?.id;
 
-  if (index > 0) {
-    obj.id = id;
-    fakeDb[index] = obj;
-    fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(fakeDb), (err) => {
-      console.log(err);
-    });
-    return res.status(201).json({ message: 'Updated', fakeDb });
+  try {
+    const updatedAccount = req.body;
+    const query = { _id: new ObjectId(id) };
+
+    const database = await connectDB();
+    const result = await database.collection('accounts').updateOne(query, { $set: updatedAccount });
+
+    return result ? res.status(200).send(`Updated id -> ${id}`) : res.status(304).send(`Not updated id -> ${id}`);
+  } catch (err) {
+    console.log(err.message);
+  } finally {
+    await client.close();
+    console.log('Connection close.');
   }
-  return res.status(404).json({ message: 'Not Found - [404]' });
 });
 
 router.delete('/:id', async (req, res) => {
@@ -121,7 +124,7 @@ router.delete('/:id', async (req, res) => {
     const accounts = await database.collection('accounts').deleteOne({ _id: id });
     return res.status(200).json({ accounts });
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
   } finally {
     await client.close();
   }
