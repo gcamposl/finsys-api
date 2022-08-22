@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
+import { MongoClient, ObjectId } from 'mongodb';
+import fakeDb from './data.json';
 import dotenv from 'dotenv';
 import path from 'path';
-import fakeDb from './data.json';
 import fs from 'fs';
-import { MongoClient, ObjectId } from 'mongodb';
 
 enum Type {
   INCOME = 'INCOME',
@@ -115,17 +115,20 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   const id = req?.params?.id;
+
+  const query = { _id: new ObjectId(id) };
   if (!id) {
     return res.status(404).json({ message: 'Bad Request - [400]' });
   }
 
   try {
     const database = await connectDB();
-    const accounts = await database.collection('accounts').deleteOne({ _id: id });
+    const accounts = await database.collection('accounts').deleteOne(query);
     return res.status(200).json({ accounts });
   } catch (err) {
     console.log(err.message);
   } finally {
     await client.close();
+    console.log('Connection close.');
   }
 });
