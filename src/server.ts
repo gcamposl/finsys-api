@@ -58,7 +58,7 @@ router.post('/', async (req: Request, res: Response) => {
   return res.status(500).json({ message: 'Internal Server Error - [500]' });
 });
 
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const db = await connectDB();
     const accounts = await db.collection('accounts').find({}).toArray();
@@ -75,12 +75,13 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-  const id = req.params.id;
+  const id = req?.params?.id;
+  const query = { _id: new ObjectId(id) };
 
   if (id) {
     try {
       const db = await connectDB();
-      const account = await db.collection('accounts').findOne({ _id: id });
+      const account = await db.collection('accounts').findOne(query);
 
       return res.status(200).json(account);
     } catch (err) {
