@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 
-export default class Account {
+class Account {
   constructor(
     public description: string,
     public value: number,
@@ -9,3 +9,5 @@ export default class Account {
     public id?: ObjectId
   ) {}
 }
+
+export { Account };
