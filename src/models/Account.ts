@@ -1,55 +1,57 @@
 import { ObjectId } from 'mongodb';
 
-class Account {
-  private _description: string;
-  private _value: number;
-  private _type: string;
-  private _comment: string;
-  private _id?: ObjectId;
+export interface accountProps {
+  description: string;
+  value: number;
+  type: string;
+  comment: string;
+  id?: ObjectId;
+}
 
-  constructor() {}
+export class Account {
+  private props: accountProps;
 
-  public get description() {
-    return this._description;
+  constructor(props: accountProps) {
+    this.props = props;
   }
 
-  public set description(description: string) {
-    this._description = description;
+  get description() {
+    return this.props.description;
   }
 
-  public get value() {
-    return this._value;
+  set description(description: string) {
+    this.props.description = description;
   }
 
-  public set value(value: number) {
-    this._value = value;
+  get value() {
+    return this.props.value;
   }
 
-  public get type() {
-    return this._type;
+  set value(value: number) {
+    this.props.value = value;
   }
 
-  public set type(type: string) {
-    this._type = type;
+  get type() {
+    return this.props.type;
   }
 
-  public get comment() {
-    return this._comment;
+  set type(type: string) {
+    this.props.type = type;
+  }
+
+  get comment() {
+    return this.props.comment;
   }
 
   public set comment(comment: string) {
-    this._comment = comment;
+    this.props.comment = comment;
   }
 
   public get id() {
-    return this._id;
+    return this.props.id;
   }
 
   public set id(id: ObjectId) {
-    if (!id) {
-      this._id = new ObjectId();
-    }
+    this.props.id = id;
   }
 }
-
-export { Account };
