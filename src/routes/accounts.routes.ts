@@ -1,46 +1,25 @@
 import express, { Request, Response } from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
-import { collections } from '../services/database.service';
+import { collections } from '../services/database';
 import { Account } from '../models/Account';
 import dotenv from 'dotenv';
-import { Console } from 'console';
 
 dotenv.config();
 
 export const accountsRouter = express.Router();
 accountsRouter.use(express.json());
 
-// connect databsae
-const client = new MongoClient(process.env.DB_CONN_STRING);
+// const client = new MongoClient(process.env.DB_CONN_STRING);
 // const connectDB = async () => {
 //   await client.connect();
 //   const database = client.db(process.env.DB_NAME);
 //   return database;
 // };
 
-// CRUD routes for entry
-// accountsRouter.post('/', async (req: Request, res: Response) => {
-//   const data = req.body;
-//   if (data && Object.keys(data).length === 0) return res.status(404).json({ message: 'Not Found - [404]' });
-
-//   try {
-//     const db = await connectDB();
-//     const accounts = db.collection('accounts');
-//     await accounts.insertOne(data);
-
-//     return res.status(201).json(data);
-//   } catch (err) {
-//     console.log(err.message);
-//   } finally {
-//     await client.close();
-//     console.log('Connection close.');
-//   }
-//   return res.status(500).json({ message: 'Internal Server Error - [500]' });
-// });
-
 accountsRouter.get('/', async (req: Request, res: Response) => {
+  console.log('teste');
   try {
-    const accounts: Account[] = (await collections.accounts.find({}).toArray()) as unknown as Account[];
+    const accounts = (await collections.accounts.find({}).toArray()) as unknown as Account[];
     console.log('teste');
 
     return res.status(200).send(accounts);
@@ -59,6 +38,25 @@ accountsRouter.get('/', async (req: Request, res: Response) => {
   //   console.log('Connection close.');
   // }
 });
+
+// accountsRouter.post('/', async (req: Request, res: Response) => {
+//   const data = req.body;
+//   if (data && Object.keys(data).length === 0) return res.status(404).json({ message: 'Not Found - [404]' });
+
+//   try {
+//     const db = await connectDB();
+//     const accounts = db.collection('accounts');
+//     await accounts.insertOne(data);
+
+//     return res.status(201).json(data);
+//   } catch (err) {
+//     console.log(err.message);
+//   } finally {
+//     await client.close();
+//     console.log('Connection close.');
+//   }
+//   return res.status(500).json({ message: 'Internal Server Error - [500]' });
+// });
 
 // accountsRouter.get('/:id', async (req, res) => {
 //   const id = req?.params?.id;
