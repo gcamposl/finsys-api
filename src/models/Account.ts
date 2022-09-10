@@ -5,6 +5,7 @@ export interface accountProps {
   value: number;
   type: string;
   comment: string;
+  payDay: Date;
   id?: ObjectId;
 }
 
@@ -12,6 +13,10 @@ export class Account {
   private props: accountProps;
 
   constructor(props: accountProps) {
+    const { payDay } = props;
+    const today = new Date();
+    if (payDay <= today) throw new Error('invalid payday');
+
     this.props = props;
   }
 
@@ -43,11 +48,19 @@ export class Account {
     return this.props.comment;
   }
 
-  public set comment(comment: string) {
+  set comment(comment: string) {
     this.props.comment = comment;
   }
 
-  public get id() {
+  get payDay() {
+    return this.props.payDay;
+  }
+
+  set payDay(payDay: Date) {
+    this.props.payDay = payDay;
+  }
+
+  get id() {
     return this.props.id;
   }
 
