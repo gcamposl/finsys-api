@@ -4,7 +4,7 @@ export interface accountProps {
   description: string;
   value: number;
   type: string;
-  comment: string;
+  comment?: string;
   payDay: Date;
   id?: ObjectId;
 }
