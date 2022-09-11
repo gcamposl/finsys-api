@@ -15,7 +15,14 @@ export class Account {
   constructor(props: accountProps) {
     const { payDay } = props;
     const today = new Date();
-    if (payDay <= today) throw new Error('invalid payday');
+
+    // if (!this.props.id) {
+    //   this.props.id = new ObjectId();
+    // }
+
+    if (payDay <= today) {
+      throw new Error('invalid payday');
+    }
 
     this.props = props;
   }
