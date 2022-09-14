@@ -11,7 +11,6 @@ export interface accountProps {
 
 export class Account {
   private props: accountProps;
-
   constructor(props: accountProps) {
     const { payDay } = props;
     const today = new Date();

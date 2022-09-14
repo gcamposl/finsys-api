@@ -1,5 +1,5 @@
 import * as mongoDB from 'mongodb';
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
 export const collections: { accounts?: mongoDB.Collection } = {};
 

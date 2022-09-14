@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { collections } from '../services/database';
 import { Account } from '../models/Account';
 import dotenv from 'dotenv';
@@ -7,36 +7,17 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const accountsRouter = express.Router();
-accountsRouter.use(express.json());
-
-// const client = new MongoClient(process.env.DB_CONN_STRING);
-// const connectDB = async () => {
-//   await client.connect();
-//   const database = client.db(process.env.DB_NAME);
-//   return database;
-// };
 
 accountsRouter.get('/', async (req: Request, res: Response) => {
-  console.log('teste');
+  //console.log('teste');
   try {
-    const accounts = (await collections.accounts.find({}).toArray()) as unknown as Account[];
-    console.log('teste');
+    const accounts = await collections.accounts.find({}).toArray();
+    console.log(accounts);
 
     return res.status(200).send(accounts);
   } catch (err) {
     return res.status(500).send(err.message);
   }
-  // try {
-  //   const db = await connectDB();
-  //   const accounts = await db.collection('accounts').find({}).toArray();
-
-  //   return res.status(200).json(accounts);
-  // } catch (err) {
-  //   console.log(err.message);
-  // } finally {
-  //   await client.close();
-  //   console.log('Connection close.');
-  // }
 });
 
 // accountsRouter.post('/', async (req: Request, res: Response) => {
