@@ -9,7 +9,7 @@ dotenv.config();
 export const accountsRouter = express.Router();
 
 accountsRouter.get('/', async (req: Request, res: Response) => {
-  //console.log('teste');
+  console.log('teste');
   try {
     const accounts = await collections.accounts.find({}).toArray();
     console.log(accounts);
